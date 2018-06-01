@@ -51,10 +51,10 @@ app.post('/message',function(req,res) {
             break;
     }
 });
-
+http.createServer(app).listen(9090, function() { console.log('서버 실행 중...\n')});
 //var urlencode = require('urlencode'); console.log(urlencode('변환')); //console.log(urlencode.decode('%EB%B3%80%ED%99%98'));
 
-//http.createServer(app).listen(9090, function() { console.log('서버 실행 중...\n')});
+
 
 //http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=%EC%84%9C%EC%B4%88%EA%B5%AC&dataTerm=daily&pageNo=1&numOfRows=1&ServiceKey=IRw86Lln5mLdFBdurIth3h45Kk3ubLoozSjOupqmmHlqfN8Ozk3ztxyL2lTxHZfMiikCtHrooV0K56UyBW3JBw%3D%3D&ver=1.3
 
