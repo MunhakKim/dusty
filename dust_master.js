@@ -88,13 +88,6 @@ function classServiceDetail(num1,num2) {
 }
 
 
-
-//console.log($api_url);
-
-
-
-
-
 function statePm10Func(pm10){
     /*
     미세먼지 상태 판별 함수
@@ -126,13 +119,10 @@ function statePm25Func(pm25){
 }
 
 
-
-
-
 app.get('/keyboard', function(req,res) {
     var data ={
         'type': 'buttons',
-        'buttons': ['서초구','송파구','종로구']
+        'buttons': ['서울','경기','인천','','대구','광주','대전','울산','경북','경남','충북','충남','전북','전남','제주','강원','세종']
     };
     res.json(data);
 });
@@ -142,15 +132,39 @@ app.get('/keyboard', function(req,res) {
 var statePm10='';
 var statePm25='';
 
+
+
+
 app.post('/message',function(req,res) {
     var msg = req.body.content;
+    var userId = req.body.user_key;
     console.log('전달받은 메시지: ' + msg);
-
+    console.log('유저식별키: ' + userId);
     var send = {};
 
+
     request(makeUrl(msg),function(error,response,body){
+
+
         $ = cheerio.load(body);
+
+        let totalCnt = $('body').find('totalCount').text();
+
+        if(totalCnt==0)
+        {
+           send = {
+                    'message': {
+                        'text': '암것도 없네유'
+
+                    }
+                }
+            res.json(send);
+        }
+
+        else
+        {
         $('item').each(function(idx) {
+
 
             let pm10 = $(this).find('pm10Value').text();
             let dataTime = $(this).find('dataTime').text();
@@ -166,52 +180,19 @@ app.post('/message',function(req,res) {
 
                 }
             }
-            console.log(send);
+            //console.log(send);
              res.json(send);
             console.log('측정소:', msg);
             console.log('측정일:', dataTime);
             console.log('미세먼지:', pm10, '상태:', statePm10);
             console.log('초미세먼지:', pm25, '상태:', statePm25);
         });
+        }
+
     });
 
 
+    //console.log(send);
 
-
-    /*
-    switch(msg) {
-        case '서초구':
-            send = {
-                'message': {
-                    'text': '서초구 미세먼지 상태는 나쁨입니다!\n 외출시 마스크를 잊지마세요'
-                }
-            }
-            break;
-        case '송파구':
-            send = {
-                'message': {
-                    'text': '송파구 미세먼지 상태는 매우나쁨입니다!\n 가급적 외출을 삼가주세요!!'
-                }
-            }
-            break;
-        case '종로구':
-            send = {
-                'message': {
-                    'text': '종로구 미세먼지 상태는 좋음입니다!'
-                }
-            }
-            break;
-        default:
-            send = {
-                'message': {
-                    'text': '알 수 없는 명령입니다!'
-                }
-            }
-            break;
-        }
-    */
-
-    console.log(send);
-    //res.json(send);
 });
 http.createServer(app).listen(5974, function() { console.log('서버 실행 중...\n')});
