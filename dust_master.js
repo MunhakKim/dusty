@@ -158,15 +158,16 @@ app.post('/message',function(req,res) {
 
             statePm10 = statePm10Func(pm10);
             statePm25 = statePm25Func(pm25);
-            var finaltxt = '측정소:'+msg+'\n'+'측정일:' + dataTime+'\n'+'미세먼지:'+statePm10+'\n'+'초미세먼지:'+statePm25+'\n';
+            var finaltxt = '측정소: '+msg+'\n'+'측정일: ' + dataTime+'\n'+'미세먼지: '+pm10+'㎍/㎥'+', '+statePm10+'\n'+'초미세먼지: '+pm25+'㎍/㎥'+', '+statePm25+'\n';
             send = {
                 'message': {
-                    'text': 'finaltxt'
+                    'text': finaltxt
 
 
                 }
             }
-
+            console.log(send);
+             res.json(send);
             console.log('측정소:', msg);
             console.log('측정일:', dataTime);
             console.log('미세먼지:', pm10, '상태:', statePm10);
@@ -177,7 +178,7 @@ app.post('/message',function(req,res) {
 
 
 
-
+    /*
     switch(msg) {
         case '서초구':
             send = {
@@ -208,8 +209,9 @@ app.post('/message',function(req,res) {
             }
             break;
         }
+    */
 
     console.log(send);
-    res.json(send);
+    //res.json(send);
 });
 http.createServer(app).listen(5974, function() { console.log('서버 실행 중...\n')});
