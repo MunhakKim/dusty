@@ -1,0 +1,22 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://harryjo1991:guddlf2!@github.com/MunhakKim/dusty.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MunhakKim/dusty/issues"
+  },
+  "homepage": "https://github.com/MunhakKim/dusty#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
