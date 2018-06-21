@@ -9,6 +9,81 @@ var url_api_ans;
 let request = require('request');
 let cheerio = require('cheerio');
 
+
+//데이터 베이스 연결 부분
+var mentStr;
+
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://kakao-chatbot-db:rlaansgkr1@ds018238.mlab.com:18238/kakao-chatbot-dusty');
+
+var RanNum;
+
+function getRandomInt(min, max) { //min ~ max 사이의 임의의 정수 반환
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+RanNum = getRandomInt(1, 5);
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+    console.log('FreshbankdDB DataBase is connected with mongoose!');
+});
+
+
+
+
+
+//멘트 저장 스키마
+var mentTemp = mongoose.Schema({
+    index: 'number',
+    ment: 'string'
+});
+
+
+
+//멘트 저장 테이블
+var Ment1 = mongoose.model('Ment1', mentTemp);
+
+// 8. Student 객체를 new 로 생성해서 값을 입력
+//var newStudent = new Student({name:'Hong Gil Dong', address:'서울시 강남구 논현동', age:'22'});
+
+
+
+Ment1.findOne({
+    'index': RanNum
+}).select('ment').exec(function (err, user) {
+
+    //console.log("q1");
+    mentStr = user.ment;
+    console.log(user.ment + "\n");
+
+    return;
+
+});
+
+
+
+// 11. 특정 아이디값 가져오기
+/*
+Student.findOne({_id:'585b777f7e2315063457e4ac'}, function(error,student){
+    console.log('--- Read one ---');
+    if(error){
+        console.log(error);
+    }else{
+        console.log(student);
+    }
+});
+*/
+
+
+
+
+
+
+
+
+
 function stationNameFunc(msg) {
     var station_name = msg;
     var urlencode = require('urlencode');
@@ -133,7 +208,26 @@ app.get('/keyboard', function (req, res) {
         'buttons': ['설명', '서울', '경기', '인천', '대구', '광주', '대전', '울산', '경북', '경남', '충북', '충남', '전북', '전남', '제주', '강원', '세종']
     };
     res.json(data);
+    //console.log(res);
 });
+//app.post('/keyboard', function (req, res) {
+//
+//    var msg = req.body.content;
+//    console.log(msg);
+//
+//    var data = {
+//        'type': 'buttons',
+//        'buttons': [
+//                    '선택 1',
+//                    '선택 2',
+//                    '선택 3'
+//                ]
+//    };
+//    res.json(data);
+//
+//
+//
+//});
 app.post('/message', function (req, res) {
     var msg = req.body.content;
     var userId = req.body.user_key;
@@ -142,6 +236,22 @@ app.post('/message', function (req, res) {
     var send = {};
 
     switch (msg) {
+        case '설명':
+            send = {
+                'message': {
+                    'text': '다시 띄워봅니다'
+                },
+                'keyboard': {
+                    'type': 'buttons',
+                    'buttons': [
+                    '선택 1',
+                    '선택 2',
+                    '선택 3'
+                    ]
+                }
+            }
+            res.json(send);
+            break;
         case '서울':
             send = {
                 'message': {
@@ -280,7 +390,7 @@ app.post('/message', function (req, res) {
         default:
             request(makeUrl(msg), function (error, response, body) {
 
-
+                var RN = getRandomInt(1, 5);
                 $ = cheerio.load(body);
 
                 let totalCnt = $('body').find('totalCount').text();
@@ -303,7 +413,22 @@ app.post('/message', function (req, res) {
 
                         statePm10 = statePm10Func(pm10);
                         statePm25 = statePm25Func(pm25);
-                        var finaltxt = '측정소: ' + msg + '\n' + '측정일: ' + dataTime + '\n' + '미세먼지: ' + pm10 + '㎍/㎥' + ', ' + statePm10 + '\n' + '초미세먼지: ' + pm25 + '㎍/㎥' + ', ' + statePm25 + '\n' + '\n' + '오 좀 ㅅㅌㅊ인데?';
+
+                        //var RanNumTest = getRandomInt(1, 5);
+
+                        Ment1.findOne({
+                            'index': RN
+                        }).select('ment').exec(function (err, user) {
+
+                            //console.log("q1");
+                            mentStr = user.ment;
+                            console.log(user.ment + "\n");
+
+                            return;
+
+                        });
+
+                        var finaltxt = '측정소: ' + msg + '\n' + '측정일: ' + dataTime + '\n' + '미세먼지: ' + pm10 + '㎍/㎥' + ', ' + statePm10 + '\n' + '초미세먼지: ' + pm25 + '㎍/㎥' + ', ' + statePm25 + '\n' + '\n' + mentStr;
                         send = {
                             'message': {
                                 'text': finaltxt
